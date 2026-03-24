@@ -4,59 +4,94 @@ This project is an intelligent **Time-Series Anomaly Detection** and **Decision 
 
 ---
 
-## 🚀 Project Architecture
-- `data/`: Synthetic dataset generation
-- `src/`: Core logic
-  - `preprocessing/`: Artifact filtering
-  - `features/`: Windowed and Slope engineering
-  - `models/`: Isolation Forest `anomaly_model` & `risk_scoring.py` 
-  - `evaluation/`: Precision/Recall `metrics.py` and `failure_analysis.py`
-- `app.py`: The Stateful **Gradio Web Interface** Dashboard (Hugging Face ready).
+## 🚀 Project Overview & Core Features
+
+The project encompasses the entire machine learning lifecycle, from data generation to deployment, and provides the following core capabilities:
+
+- **Synthetic Data Generation**: Simulates 30-minute patient vital streams (HR, SpO2, BP) including normal transport, distress scenarios, and motion-induced artifacts.
+- **Artifact Detection**: Implements signal processing techniques (rolling median, Z-score outlier removal) to filter out motion artifacts and sensor noise before anomaly detection.
+- **Feature Engineering**: Uses sliding windows to extract statistical features, trend/slope features, and cross-signal correlations (e.g., HR-SpO2 correlation).
+- **Anomaly Detection**: Utilizes an Isolation Forest model to detect early deterioration signals and calculate anomaly probabilities.
+- **Risk Scoring System**: A hybrid triage scoring system (0-100 scale) combining physiological rule breaches (HR, SpO2, BP) with the ML anomaly score, along with a confidence metric based on signal quality.
+- **Evaluation Metrics**: Generates precision, recall, false alert rates, and alert latency metrics, along with confusion matrices and risk score trends.
+- **Failure Analysis**: Analyzes edge cases such as motion artifacts mistaken for anomalies, missing true deteriorations, and sensor dropouts.
+- **API Service**: A FastAPI-powered REST service exposing a `/predict` endpoint for real-time inference on vital streams.
+- **Deployment**: A stateful, interactive Gradio web dashboard, natively deployable to Hugging Face Spaces.
+
+---
+
+## 📂 Project Architecture
+
+```text
+smart-ambulance-ai/
+│
+├── data/                  # Synthetic dataset generation & storage
+├── src/                   # Core logic
+│   ├── data_generation/   # Synthetic vitals generator
+│   ├── preprocessing/     # Artifact filtering & signal cleaning
+│   ├── features/          # Windowed and slope feature engineering
+│   ├── models/            # Isolation Forest anomaly_model & risk_scoring
+│   ├── evaluation/        # Precision/Recall metrics & failure analysis
+│   └── api/               # FastAPI endpoints
+├── app.py                 # The Stateful Gradio Web Interface Dashboard
+├── requirements.txt       # Project dependencies
+└── README.md              # Project documentation
+```
 
 ---
 
 ## 💻 Local Testing & Execution
-Once cloned, testing the dashboard locally is simple.
 
-1. Install dependencies (Using `uv`):
+This project uses `uv` for lightning-fast dependency management.
+
+1. **Install dependencies**:
 ```bash
 uv pip install -r requirements.txt
 ```
 
-2. Boot the Dashboard:
+2. **Boot the Dashboard**:
 ```bash
 python app.py
 ```
 *Navigate to `http://127.0.0.1:7860` in your web browser!*
 
+3. **Run the API Service Locally**:
+```bash
+uvicorn src.api.main:app --reload
+```
+*Access the API documentation at `http://127.0.0.1:8000/docs`*
+
 ---
 
-## 📦 Pushing to GitHub
-To publish this completed project to your GitHub profile natively, open your terminal in this directory and run the following commands sequentially:
+## 📡 API Usage Example
 
-```bash
-# 1. Initialize your project folder as a git repository
-git init
+You can send a `POST` request to the `/predict` endpoint to get real-time anomaly flags and risk scores:
 
-# 2. Add all your beautifully formatted code and models
-git add .
+**Request:**
+```json
+{
+  "heart_rate": 115,
+  "spo2": 92,
+  "bp_sys": 140,
+  "bp_dia": 90,
+  "motion_signal": 0.2
+}
+```
 
-# 3. Create your first save point
-git commit -m "Initial commit: Complete Smart Ambulance AI system with Phase 1-9 including elegant Gradio app."
-
-# 4. Link it to your GitHub account (REPLACE the URL below with your actual blank Github repo URL!)
-git remote add origin https://github.com/YourUsername/smart-ambulance-ai.git
-
-# 5. Push it up! (Change 'main' to 'master' if your git branches differently)
-git branch -M main
-git push -u origin main
+**Response:**
+```json
+{
+  "anomaly_flag": true,
+  "risk_score": 85,
+  "confidence": 0.92
+}
 ```
 
 ---
 
-## 🤗 Deploying to Hugging Face Spaces (Complete Guide)
+## 🤗 Deploying to Hugging Face Spaces
 
-Deploying to Hugging Face is the final step (Phase 9) to host the dashboard permanently online. It's incredibly easy because we wrote `app.py` specifically for it!
+Deploying to Hugging Face is incredibly easy because `app.py` is written specifically for it!
 
 1. Go to **[Hugging Face Spaces](https://huggingface.co/spaces)** and log in.
 2. Click **Create new Space**.
@@ -67,7 +102,7 @@ Deploying to Hugging Face is the final step (Phase 9) to host the dashboard perm
 7. **Create Space**.
 
 **Pushing the code to the Space:**
-Now you just need to upload these files to your Space. You can do this by dragging and dropping the files directly into the Hugging Face "Files and versions" tab on the website, OR use Git directly from your terminal:
+You can upload the files directly into the Hugging Face "Files and versions" tab on the website, OR use Git directly from your terminal:
 
 ```bash
 # Add your new Hugging Face Space as a remote destination
