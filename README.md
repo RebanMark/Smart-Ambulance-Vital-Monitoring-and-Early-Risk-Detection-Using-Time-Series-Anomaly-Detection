@@ -1,3 +1,13 @@
+---
+title: Smart Ambulance AI edge Monitor
+emoji: 🚑
+colorFrom: blue
+colorTo: red
+sdk: gradio
+sdk_version: "4.26.0"
+app_file: app.py
+pinned: false
+---
 # 🚑 Smart Ambulance AI Edge Monitor
 
 This project is an intelligent **Time-Series Anomaly Detection** and **Decision Support System** built for paramedic environments. It analyzes streaming patient vitals (Heart rate, SpO2, Blood Pressure) in real-time, intelligently filters out ambulance motion artifacts, and uses a hybrid Machine Learning & Clinical Rules pipeline to proactively detect patient deterioration over 5-minute rolling windows.
